@@ -63,6 +63,12 @@ const IconLayers = (p: IconProps) => (
     <path d="m3 12 9 5 9-5M3 17l9 5 9-5" />
   </Icon>
 );
+const IconDownload = (p: IconProps) => (
+  <Icon className={p.className}>
+    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+    <path d="M7 10l5 5 5-5M12 15V3" />
+  </Icon>
+);
 
 /* ------------------------------------------------------------------ */
 /* Data                                                               */
@@ -114,6 +120,20 @@ const steps = [
   },
 ];
 
+/*
+ * 무료 미끼(패키지 A) 다운로드 — Google Drive 직접 다운로드 링크.
+ * 사용법:
+ *   1) Google Drive에 web-landing-next.zip 업로드.
+ *   2) 파일 우클릭 → 공유 → "링크가 있는 모든 사용자"(뷰어)로 공개.
+ *   3) 공유 링크 https://drive.google.com/file/d/<FILE_ID>/view?... 에서 <FILE_ID>만 복사.
+ *   4) 아래 FREE_STARTER_FILE_ID 에 붙여넣으면 카드의 버튼이 바로 다운로드로 동작한다.
+ * ID가 비어 있으면 버튼 대신 "무료" 텍스트로 폴백한다(깨진 링크 없음).
+ */
+const FREE_STARTER_FILE_ID = "1LarWTiLG7qHW9X6cyTl88xk04jeT60fE"; // Drive 파일 ID
+const FREE_STARTER_DOWNLOAD_URL = FREE_STARTER_FILE_ID
+  ? `https://drive.google.com/uc?export=download&id=${FREE_STARTER_FILE_ID}`
+  : "";
+
 type Pkg = {
   tag: string;
   title: string;
@@ -122,6 +142,7 @@ type Pkg = {
   badge: string;
   icon: (p: IconProps) => ReactNode;
   highlight?: boolean;
+  downloadUrl?: string;
 };
 
 const packages: Pkg[] = [
@@ -132,6 +153,7 @@ const packages: Pkg[] = [
     price: "무료",
     badge: "무료 미끼",
     icon: IconBolt,
+    downloadUrl: FREE_STARTER_DOWNLOAD_URL,
   },
   {
     tag: "B",
@@ -371,7 +393,19 @@ export default function Home() {
                   <p className="mt-2 flex-1 text-sm leading-6 text-zinc-600 dark:text-zinc-400">
                     {pkg.desc}
                   </p>
-                  <p className="mt-6 text-lg font-bold">{pkg.price}</p>
+                  {pkg.downloadUrl ? (
+                    <a
+                      href={pkg.downloadUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-6 flex h-11 items-center justify-center gap-2 rounded-full bg-indigo-600 px-5 text-sm font-medium text-white transition-colors hover:bg-indigo-500"
+                    >
+                      <IconDownload className="h-4 w-4" />
+                      무료 다운로드
+                    </a>
+                  ) : (
+                    <p className="mt-6 text-lg font-bold">{pkg.price}</p>
+                  )}
                 </div>
               );
             })}
